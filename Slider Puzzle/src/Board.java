@@ -154,7 +154,14 @@ public class Board {
     	return (Iterable <Board>)neighbors;
     } 
     // a board that is obtained by exchanging any pair of tiles
-    public Board twin() {}
+    public Board twin() {
+    	Iterable <Board> neighbours = neighbors ();
+    	for (Board b : neighbours) {
+    		int random = (int)(Math.random() * 3 );
+    		if (random == 0) return b;
+    		}
+    	return neighbours.iterator().next();	}
+    
 
     // unit testing (not graded)
     public static void main(String[] args) {}
