@@ -5,8 +5,13 @@ public class Board {
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
     public Board(int[][] tiles) {
-    	this.tiles = tiles;
-    	size = tiles.length + 1;
+    	size = tiles.length ;
+    	this.tiles = new int [size][size];
+    	for (int i = 0; i < size; i ++ ) {
+    		for (int j =0 ; j< size; j++) {
+    			this.tiles [i][j] = tiles [i][j];
+    		}
+    	}
     			}
                                            
     // string representation of this board
@@ -33,7 +38,7 @@ public class Board {
     	for (int i = 0; i < size; i ++) {
     		for (int j =0; j<size; j++){
     			if (tiles [i][j] != 0) {
-    				if (tiles [i][j] != i + j + 1) hamming += hamming --- hamming;
+    				if (tiles [i][j] !=  (size*i) + j +1) hamming += hamming --- hamming;
     			}
     		}
     		
@@ -48,7 +53,19 @@ public class Board {
     	for (int i = 0; i < size; i ++) {
     		for (int j =0; j<size; j++){
     			if (tiles [i][j] != 0) {
-    				if (tiles [i][j] == i + j + 1)manhattan += i+j+1;
+    				int GoalHDistance =  (tiles [i][j] % size) ;
+    				int GoalVDistance = tiles[i][j]/size;
+    				if (GoalHDistance == 0 ) {
+    					GoalHDistance = size;
+    					GoalVDistance--;  }
+    				int horizontalDistance =  Math.abs(j+1 - GoalHDistance);
+    				int verticalDistance =  Math.abs((i - GoalVDistance));
+    				
+    				
+    				
+    				if (tiles [i][j] != (size*i) + j+1) {
+    					manhattan += (horizontalDistance + verticalDistance);
+    					   				}
     			}
     		}
     		
@@ -61,7 +78,7 @@ public class Board {
     	for (int i = 0; i < size; i ++) {
     		for (int j =0; j<size; j++){
     			if (tiles [i][j] != 0) {
-    				if (tiles [i][j] != i + j + 1)return false;
+    				if (tiles [i][j] != (size*i) + j + 1)return false;
     			}
     		}
     		
@@ -71,11 +88,15 @@ public class Board {
 
     // does this board equal y?
     public boolean equals(Object y) {
+    	if (this == y) return true;
+    	else if (y == null || y.getClass() != this.getClass()) return false;
+    	try {
     	Board c = (Board) y;
-    	int cSize = c.dimension();
-    	if (cSize != this.size) return false;
-    	else if (c.hamming() != this.hamming() || c.manhattan() != this.manhattan()) return false;
-    	else return true;
+    	if (!this.toString().equals(c.toString())) return false;
+    	else return true;} 
+    	catch (ClassCastException e ) { return false ;} 
+    
+    	
     	
     }
 
@@ -155,15 +176,42 @@ public class Board {
     } 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
-    	Iterable <Board> neighbours = neighbors ();
-    	for (Board b : neighbours) {
-    		int random = (int)(Math.random() * 3 );
-    		if (random == 0) return b;
+    	int [][] twintiles = new int [size][size] ;
+    	for (int i = 0; i < size; i++) {
+    		for (int j = 0; j < size; j++) {
+    			twintiles [i][j]= tiles [i][j]; 
     		}
-    	return neighbours.iterator().next();	}
+    	}
+    	if (twintiles [0][0]!=0) {
+    		if( twintiles [0][1] != 0) {
+    			int temp = twintiles[0][0];
+    			twintiles [0][0] = twintiles [0][1];
+    			twintiles[0][1]= temp;}
+    		else {
+    			int temp = twintiles[0][0];
+        		twintiles [0][0] = twintiles [1][0];
+        		twintiles[1][0]= temp;
+    			}
+    		}
+    	else {
+    		int temp = twintiles[1][0];
+    		twintiles [1][0] = twintiles [1][1];
+    		twintiles[1][1]= temp;
+    		
+    	}
+    	return new Board(twintiles);
+    	}	
     
 
     // unit testing (not graded)
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+    	int [][] t = {{2,3,5},{1,0,4},{7,8,6}};
+    	Board b = new Board (t);
+    	Solver s = new Solver (b);
+    	for (Board v: s.solution()) {
+    		System.out.println(v.toString()); 
+    	}
+    	System.out.println (s.moves());
+    }
 
 }
